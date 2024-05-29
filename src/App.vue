@@ -1,24 +1,54 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 
-onMounted(async () => {
-  await fetchData();
+// paginate
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+const totalItems = ref(0);
+const items = ref([]);
+
+// create a computeed property to calculate the current page items
+const currentPageItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return items.value.slice(start, end);
 });
 
-function fetchData() {
-  console.log("Fetching data...");
+const totalPages = computed(() => {
+  return Math.ceil(totalItems.value / itemsPerPage.value);
+});
 
-  // curl restcountries.com/v3.1/all into public/contries.json
-  // because the restcountries.com API is not working
-  fetch("/contries.json")
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((error) => {
-      console.error("Error fetching data: ", error);
-    });
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    console.log(currentPage.value);
+    currentPage.value++;
+    console.log(currentPage.value);
+  }
 }
+
+function previousPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+}
+
+onMounted(async () => {
+  try {
+    const response = await fetch("/countries.json");
+    const data = await response.json();
+
+    // setup pagination
+    totalItems.value = data.length;
+    items.value = data;
+
+    console.log("Finished fetching data");
+    console.log(totalItems.value);
+    console.log(typeof data);
+    console.log(data[0]);
+  } catch (error) {
+    console.error(error);
+  }
+});
 </script>
 
 <template>
@@ -146,6 +176,8 @@ function fetchData() {
       <tbody>
         <tr
           class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+          v-for="(item, i) in currentPageItems"
+          :key="i"
         >
           <td class="w-4 p-4">
             <div class="flex items-center">
@@ -165,7 +197,7 @@ function fetchData() {
           >
             <img class="w-10 h-10 rounded-full" src="" alt="Jese image" />
             <div class="ps-3">
-              <div class="text-base font-semibold">Neil Sims</div>
+              <div class="text-base font-semibold">{{ item.area }}</div>
               <div class="font-normal text-gray-500">
                 neil.sims@flowbite.com
               </div>
@@ -186,6 +218,32 @@ function fetchData() {
             >
           </td>
         </tr>
+        <!-- button for next and previous  -->
+        <div>
+          <button
+            @click="previousPage"
+            :disabled="currentPage.value === 1"
+            class="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
+          >
+            Previous
+          </button>
+          <!-- show input current page -->
+          <input
+            type="text"
+            class="w-16 px-2 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
+            v-model="currentPage"
+          />
+          <button
+            @click="nextPage"
+            :disabled="
+              currentPage.value ===
+              Math.ceil(totalItems.value / itemsPerPage.value)
+            "
+            class="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
+          >
+            Next
+          </button>
+        </div>
       </tbody>
     </table>
   </div>
