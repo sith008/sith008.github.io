@@ -238,6 +238,32 @@ function closeModal() {
           v-model="searchQuery"
         />
       </div>
+      <!-- button for next and previous  -->
+      <div>
+        <button
+          @click="previousPage"
+          :disabled="currentPage.value === 1"
+          class="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
+        >
+          Previous
+        </button>
+        <!-- show input current page -->
+        <input
+          type="text"
+          class="w-16 px-2 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
+          v-model="currentPage"
+        />
+        <button
+          @click="nextPage"
+          :disabled="
+            currentPage.value ===
+            Math.ceil(totalItems.value / itemsPerPage.value)
+          "
+          class="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
+        >
+          Next
+        </button>
+      </div>
     </div>
     <table
       class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
@@ -315,32 +341,6 @@ function closeModal() {
           <td class="px-6 py-4">{{ getAltSpelling(item) }}</td>
           <td class="px-6 py-4">{{ getIdd(item) }}</td>
         </tr>
-        <!-- button for next and previous  -->
-        <div>
-          <button
-            @click="previousPage"
-            :disabled="currentPage.value === 1"
-            class="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
-          >
-            Previous
-          </button>
-          <!-- show input current page -->
-          <input
-            type="text"
-            class="w-16 px-2 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
-            v-model="currentPage"
-          />
-          <button
-            @click="nextPage"
-            :disabled="
-              currentPage.value ===
-              Math.ceil(totalItems.value / itemsPerPage.value)
-            "
-            class="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
-          >
-            Next
-          </button>
-        </div>
       </tbody>
     </table>
   </div>
