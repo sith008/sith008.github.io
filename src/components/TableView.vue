@@ -7,6 +7,9 @@ const itemsPerPage = ref(10);
 const totalItems = ref(0);
 const items = ref([]);
 
+// sorting
+const isAscSort = ref(true);
+
 // create a computeed property to calculate the current page items
 const currentPageItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
@@ -42,13 +45,16 @@ watch(currentPage, (newPage, oldPage) => {
   window.history.replaceState({}, "", newUrl);
 });
 
+watch(isAscSort, (newSort, oldSort) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set("sort", newSort ? "asc" : "desc");
+  // update url without reloading the page
+  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+  window.history.replaceState({}, "", newUrl);
+});
+
 // sort countries by name.official asc by default
 function sortCountriesByNameAsc() {
-  console.log(items.value[0]);
-  //fin null in name
-  const nullC = items.value.filter((item) => item.name == null);
-  console.log("Country with null name");
-  console.log(nullC);
   items.value.sort((a, b) => {
     if (a.name < b.name) {
       return -1;
@@ -58,6 +64,31 @@ function sortCountriesByNameAsc() {
     }
     return 0;
   });
+}
+
+function toggleSort() {
+  if (isAscSort.value) {
+    items.value.sort((a, b) => {
+      if (a.name < b.name) {
+        return 1;
+      }
+      if (a.name > b.name) {
+        return -1;
+      }
+      return 0;
+    });
+  } else {
+    items.value.sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+  isAscSort.value = !isAscSort.value;
 }
 
 // map json data to the required format
@@ -113,7 +144,9 @@ function getIdd(item) {
 onBeforeMount(() => {
   const urlParams = new URLSearchParams(window.location.search);
   const page = urlParams.get("page");
+  const sort = urlParams.get("sort");
   currentPage.value = page ? parseInt(page) : 1;
+  isAscSort.value = sort ? sort === "desc" : true;
 });
 
 onMounted(async () => {
@@ -125,7 +158,8 @@ onMounted(async () => {
     totalItems.value = data.length;
     items.value = mapJsonToData(data);
 
-    sortCountriesByNameAsc();
+    // sortCountriesByNameAsc();
+    toggleSort();
 
     console.log("Finished fetching data");
     console.log(totalItems.value);
@@ -179,18 +213,31 @@ onMounted(async () => {
         <tr>
           <th scope="col" class="px-6 py-3">
             <div class="flex items-center">
-              Color
-              <a href="#"
-                ><svg
+              <a href="#" class="flex items-center" @click="toggleSort">
+                Country
+                <svg
                   class="w-3 h-3 ms-1.5"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path
-                    d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"
-                  /></svg
+                  <template v-if="isAscSort">
+                    <!-- down -->
+                    <path
+                      fill-rule="evenodd"
+                      d="M18.425 10.271C19.499 8.967 18.57 7 16.88 7H7.12c-1.69 0-2.618 1.967-1.544 3.271l4.881 5.927a2 2 0 0 0 3.088 0l4.88-5.927Z"
+                      clip-rule="evenodd"
+                    />
+                  </template>
+                  <template v-else>
+                    <!-- up -->
+                    <path
+                      fill-rule="evenodd"
+                      d="M5.575 13.729C4.501 15.033 5.43 17 7.12 17h9.762c1.69 0 2.618-1.967 1.544-3.271l-4.881-5.927a2 2 0 0 0-3.088 0l-4.88 5.927Z"
+                      clip-rule="evenodd"
+                    />
+                  </template></svg
               ></a>
             </div>
           </th>
