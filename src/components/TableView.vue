@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { watch, onBeforeMount, onMounted, ref, computed } from "vue";
 
 // paginate
 const currentPage = ref(1);
@@ -31,6 +31,24 @@ function previousPage() {
     currentPage.value--;
   }
 }
+
+// update the current page when the currentPage value changes
+watch(currentPage, (newPage, oldPage) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set("page", newPage);
+
+  // update url without reloading the page
+  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+  window.history.replaceState({}, "", newUrl);
+});
+
+// Lifecycle hooks
+
+onBeforeMount(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const page = urlParams.get("page");
+  currentPage.value = page ? parseInt(page) : 1;
+});
 
 onMounted(async () => {
   try {
