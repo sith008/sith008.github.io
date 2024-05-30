@@ -1,9 +1,12 @@
 <script setup>
+// import modal
+import Modal from "./Modal.vue";
+
 import { watch, onBeforeMount, onMounted, ref, computed } from "vue";
 
 // paginate
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
+const itemsPerPage = ref(25);
 const totalItems = ref(0);
 const items = ref([]);
 
@@ -12,6 +15,19 @@ const isAscSort = ref(true);
 
 // fuzzy search on name property
 const searchQuery = ref("");
+
+// view
+const isShowViewModal = ref(false);
+const selectedItem = ref(null);
+
+function showModal(item) {
+  selectedItem.value = item;
+  isShowViewModal.value = true;
+  console.log("showModal");
+  console.log(selectedItem.value);
+  console.log(isShowViewModal.value);
+  // update
+}
 
 // computed property to filter items based on search query
 const filteredItems = computed(() => {
@@ -143,8 +159,6 @@ function getIdd(item) {
   try {
     return item.idd.root + item.idd.suffixes[0];
   } catch (error) {
-    console.log("Error in idd");
-    console.log(item);
     return "";
   }
 }
@@ -178,9 +192,19 @@ onMounted(async () => {
     console.error(error);
   }
 });
+
+function closeModal() {
+  isShowViewModal.value = false;
+  console.log("closeModal");
+}
 </script>
 
 <template>
+  <Modal
+    v-if="isShowViewModal"
+    :item="selectedItem"
+    @close-modal="closeModal"
+  />
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <div
       class="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900"
@@ -261,8 +285,9 @@ onMounted(async () => {
       </thead>
       <tbody>
         <tr
-          class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+          class="cursor-pointer bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
           v-for="(item, i) in currentPageItems"
+          @click="showModal(item)"
           :key="i"
         >
           <th
