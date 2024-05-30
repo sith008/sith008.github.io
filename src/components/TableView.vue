@@ -10,11 +10,21 @@ const items = ref([]);
 // sorting
 const isAscSort = ref(true);
 
+// fuzzy search on name property
+const searchQuery = ref("");
+
+// computed property to filter items based on search query
+const filteredItems = computed(() => {
+  return items.value.filter((item) => {
+    return item.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+  });
+});
+
 // create a computeed property to calculate the current page items
 const currentPageItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
-  return items.value.slice(start, end);
+  return filteredItems.value.slice(start, end);
 });
 
 const totalPages = computed(() => {
@@ -201,6 +211,7 @@ onMounted(async () => {
           id="table-search-users"
           class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="Search country name"
+          v-model="searchQuery"
         />
       </div>
     </div>
