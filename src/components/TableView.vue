@@ -238,110 +238,117 @@ function closeModal() {
           v-model="searchQuery"
         />
       </div>
-      <!-- button for next and previous  -->
-      <div>
-        <button
-          @click="previousPage"
-          :disabled="currentPage.value === 1"
-          class="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
-        >
-          Previous
-        </button>
-        <!-- show input current page -->
-        <input
-          type="text"
-          class="w-16 px-2 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
-          v-model="currentPage"
-        />
-        <button
-          @click="nextPage"
-          :disabled="
-            currentPage.value ===
-            Math.ceil(totalItems.value / itemsPerPage.value)
-          "
-          class="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
-        >
-          Next
-        </button>
+      <div class="flex space-x-2">
+        <p class="px-4 py-2 text-sm">
+          {{ `${currentPage} / ${totalPages} pages` }}
+        </p>
+        <!-- button for next and previous  -->
+        <div>
+          <button
+            @click="previousPage"
+            :disabled="currentPage.value === 1"
+            class="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
+          >
+            Previous
+          </button>
+          <!-- show input current page -->
+          <input
+            type="text"
+            class="w-16 px-2 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
+            v-model="currentPage"
+          />
+          <button
+            @click="nextPage"
+            :disabled="
+              currentPage.value ===
+              Math.ceil(totalItems.value / itemsPerPage.value)
+            "
+            class="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
-    <table
-      class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
-    >
-      <thead
-        class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+    <div class="overflow-auto h-[70vh]">
+      <table
+        class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
       >
-        <tr>
-          <th scope="col" class="px-6 py-3">
-            <div class="flex items-center">
-              <a href="#" class="flex items-center" @click="toggleSort">
-                Country
-                <svg
-                  class="w-3 h-3 ms-1.5"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <template v-if="isAscSort">
-                    <!-- down -->
-                    <path
-                      fill-rule="evenodd"
-                      d="M18.425 10.271C19.499 8.967 18.57 7 16.88 7H7.12c-1.69 0-2.618 1.967-1.544 3.271l4.881 5.927a2 2 0 0 0 3.088 0l4.88-5.927Z"
-                      clip-rule="evenodd"
-                    />
-                  </template>
-                  <template v-else>
-                    <!-- up -->
-                    <path
-                      fill-rule="evenodd"
-                      d="M5.575 13.729C4.501 15.033 5.43 17 7.12 17h9.762c1.69 0 2.618-1.967 1.544-3.271l-4.881-5.927a2 2 0 0 0-3.088 0l-4.88 5.927Z"
-                      clip-rule="evenodd"
-                    />
-                  </template></svg
-              ></a>
-            </div>
-          </th>
-          <th scope="col" class="px-6 py-3">cca2</th>
-          <th scope="col" class="px-6 py-3">cca3</th>
-          <th scope="col" class="px-6 py-3">native name</th>
-          <th scope="col" class="px-6 py-3">alternative spellings</th>
-          <th scope="col" class="px-6 py-3">idd</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          class="cursor-pointer bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-          v-for="(item, i) in currentPageItems"
-          @click="showModal(item)"
-          :key="i"
+        <thead
+          class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
         >
-          <th
-            scope="row"
-            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
-          >
-            <img
-              class="w-10 h-10 rounded-full object-contain"
-              :src="item.flags"
-              alt="Jese image"
-            />
-            <div class="ps-3">
-              <div class="text-base font-semibold">{{ item.area }}</div>
-              <div class="font-normal text-gray-500">
-                {{ item.name }}
+          <tr>
+            <th scope="col" class="px-6 py-3">
+              <div class="flex items-center">
+                <a href="#" class="flex items-center" @click="toggleSort">
+                  Country
+                  <svg
+                    class="w-3 h-3 ms-1.5"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <template v-if="isAscSort">
+                      <!-- down -->
+                      <path
+                        fill-rule="evenodd"
+                        d="M18.425 10.271C19.499 8.967 18.57 7 16.88 7H7.12c-1.69 0-2.618 1.967-1.544 3.271l4.881 5.927a2 2 0 0 0 3.088 0l4.88-5.927Z"
+                        clip-rule="evenodd"
+                      />
+                    </template>
+                    <template v-else>
+                      <!-- up -->
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.575 13.729C4.501 15.033 5.43 17 7.12 17h9.762c1.69 0 2.618-1.967 1.544-3.271l-4.881-5.927a2 2 0 0 0-3.088 0l-4.88 5.927Z"
+                        clip-rule="evenodd"
+                      />
+                    </template></svg
+                ></a>
               </div>
-            </div>
-          </th>
-          <td class="px-6 py-4">{{ item.cca2 }}</td>
-          <td class="px-6 py-4">{{ item.cca3 }}</td>
-          <!-- display the offciall name in side the object first key-->
-          <td class="px-6 py-4">
-            {{ getNativeName(item) }}
-          </td>
-          <td class="px-6 py-4">{{ getAltSpelling(item) }}</td>
-          <td class="px-6 py-4">{{ getIdd(item) }}</td>
-        </tr>
-      </tbody>
-    </table>
+            </th>
+            <th scope="col" class="px-6 py-3">cca2</th>
+            <th scope="col" class="px-6 py-3">cca3</th>
+            <th scope="col" class="px-6 py-3">native name</th>
+            <th scope="col" class="px-6 py-3">alternative spellings</th>
+            <th scope="col" class="px-6 py-3">idd</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="cursor-pointer bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+            v-for="(item, i) in currentPageItems"
+            @click="showModal(item)"
+            :key="i"
+          >
+            <th
+              scope="row"
+              class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+            >
+              <img
+                class="w-10 h-10 rounded-full object-contain"
+                :src="item.flags"
+                alt="Jese image"
+              />
+              <div class="ps-3">
+                <div class="text-base font-semibold">{{ item.area }}</div>
+                <div class="font-normal text-gray-500">
+                  {{ item.name }}
+                </div>
+              </div>
+            </th>
+            <td class="px-6 py-4">{{ item.cca2 }}</td>
+            <td class="px-6 py-4">{{ item.cca3 }}</td>
+            <!-- display the offciall name in side the object first key-->
+            <td class="px-6 py-4">
+              {{ getNativeName(item) }}
+            </td>
+            <td class="px-6 py-4">{{ getAltSpelling(item) }}</td>
+            <td class="px-6 py-4">{{ getIdd(item) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
