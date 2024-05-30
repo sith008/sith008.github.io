@@ -42,6 +42,24 @@ watch(currentPage, (newPage, oldPage) => {
   window.history.replaceState({}, "", newUrl);
 });
 
+// sort countries by name.official asc by default
+function sortCountriesByNameAsc() {
+  console.log(items.value[0]);
+  //fin null in name
+  const nullC = items.value.filter((item) => item.name == null);
+  console.log("Country with null name");
+  console.log(nullC);
+  items.value.sort((a, b) => {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  });
+}
+
 // map json data to the required format
 function mapJsonToData(json) {
   return json.map((item) => {
@@ -67,7 +85,13 @@ function mapJsonToData(json) {
 
 // handle object chaining
 function getNativeName(item) {
-  return item.nativeName[Object.keys(item.nativeName)]?.official || "";
+  try {
+    return item.nativeName[Object.keys(item.nativeName)]?.official || "";
+  } catch (error) {
+    console.log("Error in nativeName");
+    console.log(item);
+    return "";
+  }
 }
 
 function getAltSpelling(item) {
@@ -75,7 +99,13 @@ function getAltSpelling(item) {
 }
 
 function getIdd(item) {
-  return item.idd.root + item.idd.suffixes[0];
+  try {
+    return item.idd.root + item.idd.suffixes[0];
+  } catch (error) {
+    console.log("Error in idd");
+    console.log(item);
+    return "";
+  }
 }
 
 // Lifecycle hooks
@@ -94,6 +124,8 @@ onMounted(async () => {
     // setup pagination
     totalItems.value = data.length;
     items.value = mapJsonToData(data);
+
+    sortCountriesByNameAsc();
 
     console.log("Finished fetching data");
     console.log(totalItems.value);
@@ -145,7 +177,23 @@ onMounted(async () => {
         class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
       >
         <tr>
-          <th scope="col" class="px-6 py-3">countries</th>
+          <th scope="col" class="px-6 py-3">
+            <div class="flex items-center">
+              Color
+              <a href="#"
+                ><svg
+                  class="w-3 h-3 ms-1.5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"
+                  /></svg
+              ></a>
+            </div>
+          </th>
           <th scope="col" class="px-6 py-3">cca2</th>
           <th scope="col" class="px-6 py-3">cca3</th>
           <th scope="col" class="px-6 py-3">native name</th>
