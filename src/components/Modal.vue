@@ -45,7 +45,6 @@ const { show, item } = defineProps(["show", "item"]);
         </div>
         <!-- Modal body -->
         <div class="p-6 space-y-6">
-          {{ item }}
           <div class="flex justify-center">
             <img
               class="object-cover border"
@@ -59,12 +58,29 @@ const { show, item } = defineProps(["show", "item"]);
             </li>
             <li><span class="font-bold">CCA2:</span> {{ item.cca2 }}</li>
             <li><span class="font-bold">CCA3:</span> {{ item.cca3 }}</li>
-            <li>
-              <span class="font-bold">Native Name:</span> {{ item.nativeName }}
+            <li v-if="item.nativeName != undefined">
+              <span class="font-bold">Native Name:</span>
+
+              <div class="bg-sky-700 text-white rounded p-6 space-y-2">
+                <div>
+                  <span class="font-bold">Official:</span>
+                  {{ Object.values(item.nativeName)[0].official }}
+                </div>
+                <div>
+                  <span class="font-bold">Common:</span>
+                  {{ Object.values(item.nativeName)[0].common }}
+                </div>
+              </div>
             </li>
             <li>
               <span class="font-bold">Alternate Spelling:</span>
-              {{ item.altSpellings }}
+              <div class="flex flex-wrap bg-sky-700 text-white rounded p-6">
+                <span
+                  v-for="alt in item.altSpellings"
+                  class="my-1 bg-blue-100 justify-start text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                  >{{ alt }}</span
+                >
+              </div>
             </li>
             <li v-if="Object.keys(item.idd).includes('root')">
               <span class="font-bold">IDD root: </span>
@@ -83,11 +99,13 @@ const { show, item } = defineProps(["show", "item"]);
             >
               <span class="font-bold">IDD Suffixes: </span>
               &nbsp;
-              <span
-                v-for="suffix in item.idd.suffixes"
-                class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
-                >{{ suffix }}</span
-              >
+              <div class="flex flex-wrap bg-sky-700 text-white rounded p-6">
+                <span
+                  v-for="suffix in item.idd.suffixes"
+                  class="my-1 bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                  >{{ suffix }}</span
+                >
+              </div>
             </li>
           </ul>
         </div>
