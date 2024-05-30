@@ -42,6 +42,29 @@ watch(currentPage, (newPage, oldPage) => {
   window.history.replaceState({}, "", newUrl);
 });
 
+// map json data to the required format
+function mapJsonToData(json) {
+  return json.map((item) => {
+    // following the requirement
+    // - Flags (Please use png file within flags property)
+    // - Country Name (name.official)
+    // - 2 character Country Code (cca2)
+    // - 3 character Country Code (cca3)
+    // - Native Country Name (name.nativeName)
+    // - Alternative Country Name (altSpellings)
+    // - Country Calling Codes (idd)
+    return {
+      flags: item.flags.png,
+      name: item.name.official,
+      cca2: item.cca2,
+      cca3: item.cca3,
+      nativeName: item.name.nativeName,
+      altSpellings: item.altSpellings,
+      idd: item.idd,
+    };
+  });
+}
+
 // Lifecycle hooks
 
 onBeforeMount(() => {
@@ -57,12 +80,11 @@ onMounted(async () => {
 
     // setup pagination
     totalItems.value = data.length;
-    items.value = data;
+    items.value = mapJsonToData(data);
 
     console.log("Finished fetching data");
     console.log(totalItems.value);
-    console.log(typeof data);
-    console.log(data[0]);
+    console.log(items.value[0]);
   } catch (error) {
     console.error(error);
   }
